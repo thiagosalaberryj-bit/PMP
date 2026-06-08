@@ -109,7 +109,7 @@ router.get('/mp-oauth-url', authMiddleware, async (req, res) => {
     );
 
     const redirectUri = `${process.env.BASE_URL}/api/auth/mp-oauth/callback`;
-    const url = `https://auth.mercadopago.com.ar/authorization?client_id=${process.env.MP_CLIENT_ID}&response_type=code&platform_id=mp&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}`;
+    const url = `https://auth.mercadopago.com.ar/authorization?client_id=${process.env.MP_CLIENT_ID}&response_type=code&redirect_uri=${encodeURIComponent(redirectUri)}&state=${state}`;
 
     res.json({ url });
   } catch (err) {
