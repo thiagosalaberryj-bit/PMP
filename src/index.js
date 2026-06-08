@@ -9,6 +9,7 @@ dotenv.config();
 import authRoutes from './routes/auth.js';
 import paymentRoutes from './routes/payments.js';
 import webhookRoutes from './routes/webhook.js';
+import initDB from './config/init.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -27,6 +28,12 @@ app.get('*', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Servidor corriendo en puerto ${PORT}`);
+
+initDB().then(() => {
+  app.listen(PORT, () => {
+    console.log(`Servidor corriendo en puerto ${PORT}`);
+  });
+}).catch((err) => {
+  console.error('Error al iniciar la base de datos:', err);
+  process.exit(1);
 });
