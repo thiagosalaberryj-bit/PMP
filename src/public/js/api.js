@@ -43,6 +43,14 @@ const API = {
     return this.request('POST', '/api/auth/login', { email, password });
   },
 
+  getMe() {
+    return this.request('GET', '/api/auth/me');
+  },
+
+  getMpOauthUrl() {
+    return this.request('GET', '/api/auth/mp-oauth-url');
+  },
+
   getPayments() {
     return this.request('GET', '/api/payments');
   },

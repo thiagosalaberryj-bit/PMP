@@ -144,35 +144,55 @@ Baja hasta **Environment Variables** y agrega todas estas:
 2. Inicia sesion con tu cuenta de Mercado Pago (o creala)
 3. Si no tenes cuenta de MP, descarga la app y registrate
 
-### 4.2 Obtener Access Token
+### 4.2 Crear una Aplicacion
 
-1. En [developers.mercadopago.com](https://developers.mercadopago.com/), anda a **Credenciales**
+Ahora necesitas crear una **App** (no solo el Access Token). Esto permite que otros usuarios conecten su propia cuenta de MP.
+
+1. En [developers.mercadopago.com](https://developers.mercadopago.com/), anda a **Mis aplicaciones** → **Crear aplicacion**
+2. Pone cualquier nombre (ej: "PMP Links")
+3. **Producto**: Selecciona **Checkout Pro**
+4. **Redirigir URL**: pone `https://pmp-jg0e.onrender.com/api/auth/mp-oauth/callback`
+   > Esto es fundamental: despues de que un usuario autorice, MP redirige a esta URL
+5. Crea la app
+
+### 4.3 Obtener credenciales de la app
+
+1. Dentro de tu app, anda a la solapa **Credenciales**
 2. Vas a ver dos secciones: **Sandbox** (pruebas) y **Produccion**
-3. Para empezar a probar, usa las de **Sandbox**
-4. Copia el **Access Token** (empieza con `TEST-`)
+3. Copia estos dos valores de la seccion Sandbox:
 
-### 4.3 Configurar en Render
+| Variable | Donde esta |
+|---|---|
+| **Client ID** | Numero largo, ej: `123456789` |
+| **Client Secret** | Clave larga, empieza con `TEST-` |
 
-1. Anda a tu servicio en **Render** → **Environment**
-2. Edita la variable `MP_ACCESS_TOKEN` y pega el token de MP
-3. **Save Changes**
+4. Tambien copia el **Access Token** (lo usamos para el webhook)
 
-### 4.4 Configurar Webhook en Mercado Pago
+### 4.4 Configurar en Render
 
-1. En [developers.mercadopago.com](https://developers.mercadopago.com/), anda a **Webhooks** (en el menu izquierdo, o busca en Configuracion)
-2. Hace click en **Create notification**
-3. Configura:
+Anda a tu servicio en **Render** → **Environment** y agrega/edita:
+
+| Variable | Valor |
+|---|---|
+| `MP_CLIENT_ID` | El Client ID de tu app |
+| `MP_CLIENT_SECRET` | El Client Secret de tu app |
+| `MP_ACCESS_TOKEN` | El Access Token de MP |
+
+**Save Changes**
+
+### 4.5 Configurar Webhook en Mercado Pago
+
+1. En [developers.mercadopago.com](https://developers.mercadopago.com/), anda a **Webhooks** → **Create notification**
+2. Configura:
 
 | Campo | Valor |
 |---|---|
-| **URL** | `https://pmp.onrender.com/api/webhook/mp` |
+| **URL** | `https://pmp-jg0e.onrender.com/api/webhook/mp` |
 | **Events** | Selecciona **Payment** |
 
-4. Si te pide verificar, Render ya responder OK automaticamente
+3. Guarda
 
-### 4.5 (Opcional) Probar con tarjeta de prueba
-
-Si estas usando credenciales de Sandbox, usa estos datos para probar:
+### 4.6 (Opcional) Probar con tarjeta de prueba
 
 | Campo | Valor |
 |---|---|
@@ -185,13 +205,17 @@ Si estas usando credenciales de Sandbox, usa estos datos para probar:
 
 ## 5. Probar
 
-1. Anda a `https://pmp.onrender.com`
+1. Anda a `https://pmp-jg0e.onrender.com`
 2. Registrate con un nombre, email y contraseña
-3. Crea un link de pago (monto + descripcion)
-4. Copia el link que aparece
-5. Abri el link en una ventana de incognito (simula el pagador)
-6. Paga con la tarjeta de prueba de MP
-7. Volve a tu dashboard y refresca → el estado deberia cambiar a **Aprobado**
+3. Te va a aparecer un cartel azul: **"Conecta tu cuenta de Mercado Pago"** → hace click ahi
+4. MP te va a pedir que inicies sesion y autorices la app
+5. Despues de autorizar, volves al dashboard y ya aparece como **conectado**
+6. Ahora crea un link de pago (monto + descripcion)
+7. Copia el link y abrirlo en una ventana de incognito
+8. Paga con la tarjeta de prueba
+9. Volve a tu dashboard → el estado cambia a **Aprobado**
+
+> La plata va a la cuenta de MP del usuario que creo el link, no a la tuya.
 
 ### Links utiles
 
@@ -209,3 +233,4 @@ Si estas usando credenciales de Sandbox, usa estos datos para probar:
 - En el plan **Free de Render**, el servicio se duerme despues de 15 minutos sin uso. Al entrar de nuevo tarda ~30 segundos en despertar. Es normal.
 - Los datos en Aiven son persistentes (no se pierden).
 - Para produccion real, necesitas credenciales de **Produccion** de MP (no las de Sandbox).
+- **Cada usuario debe conectar su propia cuenta de MP** para poder crear links y recibir plata.

@@ -90,6 +90,22 @@ nav {
 
 .link-btn:hover { background: #007bbd; }
 
+/* MP Connect button */
+.btn-mp {
+  background: #009ee3;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+
+.btn-mp:hover { background: #007bbd; }
+
 /* Auth */
 #authView {
   display: flex;
@@ -168,6 +184,49 @@ form input:focus { border-color: #009ee3; }
   color: #27ae60;
   font-size: 13px;
   margin-top: 8px;
+}
+
+/* MP Banners */
+.mp-banner {
+  background: #e8f4fd;
+  border: 1px solid #b3dff7;
+  border-radius: 12px;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.mp-banner-text strong {
+  display: block;
+  font-size: 15px;
+  color: #1a1a1a;
+  margin-bottom: 4px;
+}
+
+.mp-banner-text p {
+  font-size: 13px;
+  color: #555;
+}
+
+.mp-connected {
+  background: #e8f5e9;
+  border: 1px solid #a5d6a7;
+  border-radius: 12px;
+  padding: 16px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #27ae60;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mp-check {
+  font-size: 18px;
 }
 
 /* Dashboard */

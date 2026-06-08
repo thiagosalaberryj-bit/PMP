@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PMP - Links de Pago</title>
-  <link rel="stylesheet" href="./css/style.css">
+  <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
   <nav id="nav" class="hidden">
@@ -40,9 +40,21 @@
     </div>
 
     <div id="dashboardView" class="hidden">
+      <div id="mpConnectBanner" class="mp-banner hidden">
+        <div class="mp-banner-text">
+          <strong>Conecta tu cuenta de Mercado Pago</strong>
+          <p>Necesitas conectar tu cuenta para poder crear links de pago y recibir dinero.</p>
+        </div>
+        <button id="mpConnectBtn" class="btn-mp">Conectar Mercado Pago</button>
+      </div>
+
+      <div id="mpConnectedBanner" class="mp-connected hidden">
+        <span class="mp-check">&#10003;</span> Mercado Pago conectado
+      </div>
+
       <div class="dashboard-header">
         <h2>Mis Links de Pago</h2>
-        <button id="createBtn" class="btn-primary">+ Nuevo link</button>
+        <button id="createBtn" class="btn-primary hidden">+ Nuevo link</button>
       </div>
       <div id="paymentsList">
         <p class="loading">Cargando...</p>

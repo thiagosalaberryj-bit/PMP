@@ -6,10 +6,6 @@ import pool from '../config/database.js';
 const router = Router();
 router.use(authMiddleware);
 
-const mpClient = new MercadoPagoConfig({
-  accessToken: process.env.MP_ACCESS_TOKEN,
-});
-
 router.post('/', async (req, res) => {
   try {
     const { transaction_amount, description } = req.body;
@@ -21,12 +17,29 @@ router.post('/', async (req, res) => {
       return res.status(400).json({ error: 'El monto debe ser mayor a 0' });
     }
 
+    const [users] = await pool.query(
+      'SELECT mp_access_token FROM users WHERE id = ?',
+      [req.userId]
+    );
+    if (users.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    const userToken = users[0].mp_access_token;
+    if (!userToken) {
+      return res.status(400).json({
+        error: 'Primero conecta tu cuenta de Mercado Pago',
+        need_mp_connect: true,
+      });
+    }
+
     const [result] = await pool.query(
       'INSERT INTO payments (user_id, transaction_amount, description, status) VALUES (?, ?, ?, ?)',
       [req.userId, transaction_amount, description, 'pending']
     );
     const paymentId = result.insertId;
 
+    const mpClient = new MercadoPagoConfig({ accessToken: userToken });
     const preference = new Preference(mpClient);
     const mpResponse = await preference.create({
       body: {
@@ -38,10 +51,6 @@ router.post('/', async (req, res) => {
             currency_id: 'ARS',
           },
         ],
-        metadata: {
-          user_id: req.userId,
-          payment_id: paymentId,
-        },
         notification_url: `${process.env.BASE_URL}/api/webhook/mp`,
         auto_return: 'approved',
         back_urls: {

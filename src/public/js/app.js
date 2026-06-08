@@ -3,6 +3,7 @@
 const $ = (id) => document.getElementById(id);
 
 let isLogin = true;
+let mpConnected = false;
 
 function showAuthError(msg) {
   const el = $('authError');
@@ -35,13 +36,35 @@ function showAuth() {
   $('nav').classList.add('hidden');
 }
 
-function showDashboard() {
+async function showDashboard() {
   $('authView').classList.add('hidden');
   $('dashboardView').classList.remove('hidden');
   $('nav').classList.remove('hidden');
   const user = JSON.parse(localStorage.getItem('pmp_user') || '{}');
   $('userName').textContent = user.name || '';
+
+  await loadUserProfile();
   loadPayments();
+}
+
+async function loadUserProfile() {
+  try {
+    const user = await API.getMe();
+    localStorage.setItem('pmp_user', JSON.stringify(user));
+    mpConnected = user.mp_connected;
+
+    if (mpConnected) {
+      $('mpConnectBanner').classList.add('hidden');
+      $('mpConnectedBanner').classList.remove('hidden');
+      $('createBtn').classList.remove('hidden');
+    } else {
+      $('mpConnectBanner').classList.remove('hidden');
+      $('mpConnectedBanner').classList.add('hidden');
+      $('createBtn').classList.add('hidden');
+    }
+  } catch (err) {
+    console.error('Error loading profile:', err);
+  }
 }
 
 /* ---- Auth Form ---- */
@@ -89,6 +112,33 @@ $('logoutBtn').addEventListener('click', () => {
   showAuth();
 });
 
+/* ---- Connect MP ---- */
+
+$('mpConnectBtn').addEventListener('click', async () => {
+  try {
+    const result = await API.getMpOauthUrl();
+    window.location.href = result.url;
+  } catch (err) {
+    alert('Error al conectar: ' + err.message);
+  }
+});
+
+/* ---- Handle MP callback params ---- */
+
+const params = new URLSearchParams(window.location.search);
+if (params.get('mp_connected') === 'true') {
+  window.history.replaceState({}, '', '/');
+  if (API.getToken()) {
+    setTimeout(() => {
+      showDashboard();
+    }, 100);
+  }
+}
+if (params.get('mp_error')) {
+  window.history.replaceState({}, '', '/');
+  alert('Error al conectar Mercado Pago. Intenta de nuevo.');
+}
+
 /* ---- Create Payment ---- */
 
 $('createBtn').addEventListener('click', () => {
@@ -126,6 +176,11 @@ $('createForm').addEventListener('submit', async (e) => {
   } catch (err) {
     $('createError').textContent = err.message;
     $('createError').classList.remove('hidden');
+    if (err.message.includes('conecta tu cuenta')) {
+      setTimeout(() => {
+        document.querySelectorAll('.modal').forEach((m) => m.classList.add('hidden'));
+      }, 2000);
+    }
   }
 });
 

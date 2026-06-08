@@ -30,5 +30,17 @@ export default async function initDB() {
   for (const sql of statements) {
     await pool.query(sql);
   }
+
+  const alterStatements = [
+    "ALTER TABLE users ADD COLUMN mp_user_id VARCHAR(255)",
+    "ALTER TABLE users ADD COLUMN mp_access_token TEXT",
+    "ALTER TABLE users ADD COLUMN mp_refresh_token TEXT",
+    "ALTER TABLE users ADD COLUMN mp_token_expires_at DATETIME",
+  ];
+
+  for (const sql of alterStatements) {
+    try { await pool.query(sql); } catch {}
+  }
+
   console.log('Tablas verificadas/creadas correctamente');
 }
